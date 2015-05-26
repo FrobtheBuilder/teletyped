@@ -1,6 +1,20 @@
 $(document).ready(function(){
+
+	var rootElement = $("#terminal");
+
+	rootElement.css("height", window.innerHeight-50)
+	rootElement.css("width", window.innerWidth-50)
+
+	script.forEach(function(command) {
+		processor.process(command);
+	});
+
+	tty.printNext(rootElement);
 	$(document).keydown(function(e) {
-		term.printNext($("#terminal"))
+		tty.printNext(rootElement);
+	});
+	$(document).click(function(e) {
+		tty.printNext(rootElement);
 	})
 })
 
@@ -27,8 +41,34 @@ Array.prototype.getIterator = function(index) {
 	}
 }
 
+var processor = (function(config) {
 
-var term = (function(script, config){
+	var filters = [
+		{	
+			name: "CATIMG",
+			func: function(argument) {
+				this.input = "cat "+argument;
+				this.output = '<img src="'+argument+'">';
+			}
+		}
+	]
+
+	return {
+		process: function (command) {
+			if (command.args != undefined) {
+				filters.forEach(function(filter) {
+					if (command.input == config.tag+filter.name) {
+						filter.func.apply(command, command.args);
+					}
+				})
+			}
+		}
+	}
+
+})(config)
+
+
+var tty = (function(script, config){
 
 	var iter = script.getIterator(0)
 	var nextElement;
@@ -36,13 +76,12 @@ var term = (function(script, config){
 	return {
 		commands: script,
 		printNext: function(element) {
-			var obj = iter.next() //HAHAHAHHHAHA
-
+			var that = this;
+			var obj = iter.next() //HAHAHAHHHAHA OMFG IT WORKS
 			var commandElem = nextElement || $("<div></div").addClass("command").append(config.prompt).appendTo(element)
 			
 			function appendCharStream(to, what, speed, index) {
 				if (index === undefined) index = 0;
-
 				to.append(what.charAt(index))
 				if (index < what.length) {
 					index++;
@@ -55,10 +94,15 @@ var term = (function(script, config){
 			appendCharStream(commandElem, obj.input, 20)
 
 			setTimeout(function() {
-				element.append('<div class="command">'+obj.output+'<br>')
+				element.append('<div class="command result">'+obj.output+'<br>')
 				element.animate({scrollTop:element[0].scrollHeight}, 1000);
-				nextElement = $("<div></div").addClass("command").append(config.prompt)
-				nextElement.appendTo(element)
+				setTimeout(function(){
+					nextElement = $("<div></div").addClass("command").append(config.prompt)
+					nextElement.appendTo(element)
+					if (obj.next != undefined && obj.next) {
+						that.printNext(element)
+					}
+				}, 100)
 			}, 1000)
 		}
 	}

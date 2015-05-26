@@ -7,13 +7,19 @@ body {
 	font-size: 25px;
 	background-color: #0f0f0f;
 	padding: 20px;
-	color: #ddd;
+	color: #ccc;
 	height: 500px;
 	width: 500px;
 	margin: auto;
-	overflow: scroll;
+	overflow: hidden;
 }
 
 .command {
 	margin: 10px 0 10px 0;
+}
+
+.result {
+	margin: 10px 0 10px 10px;
+	font-size: 35px;
+	color: #eee;
 }
