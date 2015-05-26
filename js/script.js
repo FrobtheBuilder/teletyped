@@ -10,10 +10,10 @@ var config = {
 format:
 [
 	{
-		command: "what to write out",
-		result: "what to respond with (can be any html)"
-		OR
-		result: "autoImg" for "cat ...png kind of commands"
+		input: "what to write out" or "##CATIMG" to cat an image,
+		output: "what to respond with (can be any html)",
+		[next]: boolean (whether to skip ahead immediately or wait for input)
+		[args]: "image path when using ##CATIMG"
 	}
 ]
 
@@ -22,7 +22,7 @@ format:
 var script = [
 	{
 		input: "cat /etc/motd",
-		output: "Unix and its Derivatives <br> By Evan Banyash"
+		output: "Unix and its Derivatives <br> By Frob the Builder"
 	},
 	{
 		//input: "cat img/bell.jpg",
